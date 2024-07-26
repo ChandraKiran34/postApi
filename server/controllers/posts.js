@@ -122,8 +122,11 @@ export const commentPost = async (req, res) => {
       return res.status(404).json({ msg: "Post not found" });
     }
 
+    const commentId = `${userId}_${new Date().getTime()}`;
+
     // Add the comment to the post
     const newComment = {
+      commentId : commentId,
       userId: user._id,
       firstName: user.firstName,
       lastName: user.lastName,
@@ -160,18 +163,29 @@ export const deletePost = async (req, res) => {
 
 export const deleteComment = async (req, res) => {
   try {
-    const { postId, commentIndex } = req.params;  // postId of the post, commentIndex of the comment
+    const { postId, commentId } = req.params;  // postId of the post, commentId of the comment
+    console.log(commentId)
 
     const post = await Post.findById(postId);
     if (!post) {
       return res.status(404).json({ msg: "Post not found" });
     }
+    console.log("post 1")
 
-    // Validate commentIndex
-    if (commentIndex < 0 || commentIndex >= post.comments.length) {
-      return res.status(404).json({ msg: "Invalid comment index" });
+    // Find the index of the comment with the given commentId
+    const commentIndex = post.comments.findIndex(comment => comment.commentId === commentId);
+
+
+    console.log("post 2");
+    console.log(commentIndex);
+    // Validate commentId
+    if (commentIndex === -1) {
+      return res.status(404).json({ msg: "Comment not found" });
     }
 
+
+    
+    console.log("post 22")
     // Remove the comment from the array
     post.comments.splice(commentIndex, 1);
 

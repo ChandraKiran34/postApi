@@ -32,7 +32,8 @@ export const register = async (req, res) => {
       impressions : Math.floor(Math.random() * 1000),
     });
     const savedUser = await newUser.save();
-    res.status(201).json(savedUser);
+    console.log(savedUser);
+    res.status(201).json({sucess : true, message : "user registred successfully" , savedUser});
   } catch (err) {
     res.status(500).json({error:err.message})
   }
@@ -48,11 +49,13 @@ export const login = async(req,res) => {
 
         const isMatch = bcrypt.compare(password,user.password);
         if(!isMatch) { return res.status(400).json({msg:"Invalid credentials"})};
+        console.log(user);
 
         const token = jwt.sign({id:user._id},process.env.JWT_SECRET);
         delete user.password;
-        res.status(200).json({token,user})
+        res.status(200).json({sucess : true, message: "login success", token,user})
     } catch (error) {
-        res.status(500).json({error:error.message})
+      console.log(error)
+        res.status(500).json({success : false, message : error.message})
     }
 }
